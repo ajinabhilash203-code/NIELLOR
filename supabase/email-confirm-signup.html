@@ -1,0 +1,164 @@
+<!--
+  NIELLOR — "Confirm signup" email template
+
+  WHERE THIS GOES
+    Supabase → Authentication → Emails → Templates → "Confirm signup"
+    Subject: Welcome to NIELLOR — Confirm Your Email
+    Paste everything below the comment into the Message body (HTML) box.
+
+  THE LINK
+    The button uses {{ .ConfirmationURL }} — Supabase's own action URL.
+    It is generated per message and already points back to the Site URL /
+    Redirect URL configured in the dashboard. Never replace it with a
+    hardcoded address, or confirmation will break.
+
+    Other variables available here: {{ .Email }}, {{ .Token }},
+    {{ .TokenHash }}, {{ .SiteURL }}, {{ .RedirectTo }}
+
+  EMAIL-CLIENT NOTES
+    Styles are inline and the layout is table-based on purpose — Gmail,
+    Outlook and most clients strip <style> blocks and ignore flexbox/grid.
+    Web fonts are unreliable in email, so this uses Georgia (serif) and
+    Helvetica/Arial (sans) as the closest widely-available stand-ins for
+    Cormorant Garamond and Jost.
+-->
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+       style="margin:0;padding:0;background-color:#FBF8F3;">
+  <tr>
+    <td align="center" style="padding:32px 16px;">
+
+      <!-- card -->
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+             style="max-width:560px;background-color:#FFFDFA;border:1px solid #EADBC2;">
+
+        <!-- wordmark -->
+        <tr>
+          <td align="center" style="padding:40px 32px 0 32px;">
+            <div style="font-family:Georgia,'Times New Roman',serif;font-size:22px;
+                        letter-spacing:8px;text-transform:uppercase;color:#17140F;
+                        white-space:nowrap;">
+              NIELLOR
+            </div>
+            <div style="width:38px;height:1px;background-color:#B0803F;
+                        margin:16px auto 0 auto;font-size:0;line-height:0;">&nbsp;</div>
+            <div style="font-family:Helvetica,Arial,sans-serif;font-size:9px;
+                        letter-spacing:4px;text-transform:uppercase;color:#B0803F;
+                        padding-top:12px;">
+              Eau de Parfum
+            </div>
+          </td>
+        </tr>
+
+        <!-- heading -->
+        <tr>
+          <td align="center" style="padding:34px 32px 0 32px;">
+            <div style="font-family:Georgia,'Times New Roman',serif;font-size:26px;
+                        font-weight:normal;color:#17140F;line-height:1.3;">
+              Welcome to NIELLOR.
+            </div>
+          </td>
+        </tr>
+
+        <!-- body -->
+        <tr>
+          <td align="center" style="padding:18px 40px 0 40px;">
+            <div style="font-family:Helvetica,Arial,sans-serif;font-size:15px;
+                        line-height:1.75;color:#453E33;">
+              Thank you for creating your account. Please confirm your email
+              address to complete your registration and begin your NIELLOR
+              experience.
+            </div>
+          </td>
+        </tr>
+
+        <!-- button — bulletproof for Outlook via the VML fallback -->
+        <tr>
+          <td align="center" style="padding:32px 32px 0 32px;">
+            <!--[if mso]>
+            <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml"
+                         xmlns:w="urn:schemas-microsoft-com:office:word"
+                         href="{{ .ConfirmationURL }}"
+                         style="height:50px;v-text-anchor:middle;width:260px;"
+                         arcsize="0%" stroke="f" fillcolor="#17140F">
+              <w:anchorlock/>
+              <center style="color:#FBF8F3;font-family:Helvetica,Arial,sans-serif;
+                             font-size:12px;letter-spacing:3px;">CONFIRM MY EMAIL</center>
+            </v:roundrect>
+            <![endif]-->
+            <!--[if !mso]><!-- -->
+            <a href="{{ .ConfirmationURL }}"
+               style="display:inline-block;background-color:#17140F;color:#FBF8F3;
+                      font-family:Helvetica,Arial,sans-serif;font-size:12px;
+                      letter-spacing:3px;text-transform:uppercase;text-decoration:none;
+                      padding:17px 40px;border:1px solid #17140F;">
+              Confirm My Email
+            </a>
+            <!--<![endif]-->
+          </td>
+        </tr>
+
+        <!-- plain-text fallback link -->
+        <tr>
+          <td align="center" style="padding:24px 40px 0 40px;">
+            <div style="font-family:Helvetica,Arial,sans-serif;font-size:12px;
+                        line-height:1.7;color:#7C7264;">
+              If the button does not work, copy and paste this link into your browser:
+            </div>
+            <div style="font-family:Helvetica,Arial,sans-serif;font-size:11px;
+                        line-height:1.6;color:#B0803F;word-break:break-all;padding-top:8px;">
+              {{ .ConfirmationURL }}
+            </div>
+          </td>
+        </tr>
+
+        <!-- divider -->
+        <tr>
+          <td align="center" style="padding:30px 40px 0 40px;">
+            <div style="width:100%;height:1px;background-color:#EADBC2;
+                        font-size:0;line-height:0;">&nbsp;</div>
+          </td>
+        </tr>
+
+        <!-- disclaimer -->
+        <tr>
+          <td align="center" style="padding:22px 40px 0 40px;">
+            <div style="font-family:Helvetica,Arial,sans-serif;font-size:12px;
+                        line-height:1.7;color:#7C7264;">
+              If you didn&rsquo;t create a NIELLOR account, you can safely ignore
+              this email.
+            </div>
+          </td>
+        </tr>
+
+        <!-- sign-off -->
+        <tr>
+          <td align="center" style="padding:26px 40px 40px 40px;">
+            <div style="font-family:Georgia,'Times New Roman',serif;font-style:italic;
+                        font-size:15px;color:#453E33;line-height:1.6;">
+              With elegance,
+            </div>
+            <div style="font-family:Helvetica,Arial,sans-serif;font-size:11px;
+                        letter-spacing:3px;text-transform:uppercase;color:#B0803F;
+                        padding-top:8px;">
+              The NIELLOR Team
+            </div>
+          </td>
+        </tr>
+      </table>
+
+      <!-- footer -->
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+             style="max-width:560px;">
+        <tr>
+          <td align="center" style="padding:22px 16px 8px 16px;">
+            <div style="font-family:Helvetica,Arial,sans-serif;font-size:10px;
+                        letter-spacing:2px;text-transform:uppercase;color:#7C7264;">
+              &copy; NIELLOR
+            </div>
+          </td>
+        </tr>
+      </table>
+
+    </td>
+  </tr>
+</table>

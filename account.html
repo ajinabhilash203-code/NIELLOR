@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Account — NIELLOR</title>
+<meta name="description" content="Your NIELLOR account.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="account">
+
+<header id="site-header"></header>
+
+<main>
+  <section class="page-head">
+    <div class="wrap">
+      <h1 class="display-lg" data-reveal>My Account</h1>
+      <div class="rule"><i></i></div>
+    </div>
+  </section>
+
+  <section class="section-pad" style="padding-top:clamp(1rem,2vw,2rem)">
+    <div class="wrap" id="accountRoot"></div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="js/products.js"></script>
+<script src="js/auth-config.js"></script>
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+<script>
+window.pageInit = async function () {
+
+  const root = document.getElementById('accountRoot');
+  const esc = v => String(v == null ? '' : v)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+  /* ---- Gate: no account data renders until a session exists ---------- */
+  const gate = (head, body, showSignIn) => {
+    root.innerHTML = `
+      <div class="acct-gate">
+        <p class="acct-gate-head">${head}</p>
+        <p>${body}</p>
+        <div class="acct-gate-cta">
+          ${showSignIn ? '<button class="btn" id="gateSignIn">Sign In</button>' : ''}
+          <a class="btn btn-ghost" href="collection.html">Explore the Collection</a>
+        </div>
+      </div>`;
+    const b = document.getElementById('gateSignIn');
+    if (b) b.addEventListener('click', () => openAuth('signin'));
+    initReveal();
+  };
+
+  if (!authConfigured()) {
+    return isDevHost()
+      ? gate('Accounts are not configured on this machine.',
+             'Add the Supabase project URL and publishable key to <code>js/auth-config.js</code>.', false)
+      : gate('Accounts are opening soon.',
+             'NIELLOR accounts are not available just yet.', false);
+  }
+
+  await refreshSession();
+  const user = Auth.user();
+  if (!user) {
+    return gate('Please sign in to view your account.',
+                'Sign in to see your details, addresses and orders.', true);
+  }
+
+  /* ---- Shell --------------------------------------------------------- */
+  const SECTIONS = [
+    { key: 'profile',   label: 'Personal Information' },
+    { key: 'addresses', label: 'My Addresses' },
+    { key: 'orders',    label: 'My Orders' },
+    { key: 'wishlist',  label: 'Wishlist' },
+    { key: 'cart',      label: 'Cart' }
+  ];
+
+  const since = user.created_at
+    ? new Date(user.created_at).toLocaleDateString('en-IN', { year:'numeric', month:'long' }) : '';
+
+  root.innerHTML = `
+    <div class="acct-grid">
+      <aside class="acct-side" data-reveal>
+        <p class="acct-hello">Welcome</p>
+        <p class="acct-name wordmark" id="acctName">&nbsp;</p>
+        <nav class="acct-nav" id="acctNav">
+          ${SECTIONS.map((s,i) =>
+            `<button type="button" data-sec="${s.key}"${i===0?' class="on"':''}>${s.label}</button>`).join('')}
+        </nav>
+        <button class="btn btn-ghost btn-sm btn-full" id="signOutBtn" style="margin-top:1rem">Sign Out</button>
+        ${since ? `<p class="acct-since">Member since ${esc(since)}</p>` : ''}
+      </aside>
+
+      <div class="acct-main">
+        <div class="acct-section on" data-panel="profile"><div id="profilePanel"></div></div>
+        <div class="acct-section" data-panel="addresses"><div id="addressPanel"></div></div>
+        <div class="acct-section" data-panel="orders"><div id="ordersPanel"></div></div>
+        <div class="acct-section" data-panel="wishlist"><div id="wishlistPanel"></div></div>
+        <div class="acct-section" data-panel="cart"><div id="cartPanel"></div></div>
+      </div>
+    </div>`;
+
+  const nav = document.getElementById('acctNav');
+  nav.addEventListener('click', e => {
+    const b = e.target.closest('[data-sec]');
+    if (!b) return;
+    nav.querySelectorAll('button').forEach(x => x.classList.toggle('on', x === b));
+    document.querySelectorAll('.acct-section').forEach(p =>
+      p.classList.toggle('on', p.dataset.panel === b.dataset.sec));
+  });
+
+  document.getElementById('signOutBtn').addEventListener('click', async e => {
+    e.currentTarget.disabled = true;
+    await Auth.signOut();
+    location.href = 'index.html';
+  });
+
+  /* ================= PERSONAL INFORMATION ============================= */
+  let profile = null;
+
+  async function renderProfile(editing, note) {
+    if (!profile) profile = await loadProfile();
+    const name  = (profile && profile.full_name) || user.user_metadata?.full_name || '';
+    const phone = (profile && profile.phone) || '';
+    const provider = (user.app_metadata && user.app_metadata.provider) || 'email';
+
+    document.getElementById('acctName').textContent = name || user.email || 'Account';
+
+    document.getElementById('profilePanel').innerHTML = editing ? `
+      <section class="acct-panel">
+        <div class="acct-panel-head">
+          <h2>Edit Profile</h2>
+        </div>
+        <form id="profileForm" novalidate>
+          <div class="field">
+            <label for="pf-name">Full Name</label>
+            <input id="pf-name" type="text" autocomplete="name" value="${esc(name)}"
+                   placeholder="Your name">
+          </div>
+          <div class="field">
+            <label for="pf-phone">Phone Number</label>
+            <input id="pf-phone" type="tel" inputmode="tel" autocomplete="tel"
+                   value="${esc(phone)}" placeholder="+91 00000 00000">
+          </div>
+          <div class="field">
+            <label>Email Address</label>
+            <p class="field-static">${esc(user.email || '—')}</p>
+            <p class="field-hint">Email cannot be changed here. Contact us if you need it updated.</p>
+          </div>
+          <div class="acct-actions">
+            <button class="btn" type="submit">Save Changes</button>
+            <button class="btn btn-ghost" type="button" id="pfCancel">Cancel</button>
+          </div>
+          <p class="form-status" id="pfStatus" role="status" aria-live="polite"></p>
+        </form>
+      </section>` : `
+      <section class="acct-panel">
+        <div class="acct-panel-head">
+          <h2>Personal Information</h2>
+          <button class="acct-link" type="button" id="pfEdit">Edit Profile</button>
+        </div>
+        <dl class="acct-rows">
+          <div><dt>Name</dt><dd>${esc(name) || '—'}</dd></div>
+          <div><dt>Email</dt><dd>${esc(user.email || '—')}</dd></div>
+          <div><dt>Phone</dt><dd>${esc(phone) || '—'}</dd></div>
+          <div><dt>Signed in with</dt><dd><span class="acct-provider">${esc(provider)}</span></dd></div>
+        </dl>
+        <p class="form-status ${note ? 'is-ok' : ''}" id="pfStatus" role="status" aria-live="polite">${note || ''}</p>
+      </section>`;
+
+    if (editing) {
+      document.getElementById('pfCancel').addEventListener('click', () => renderProfile(false));
+      document.getElementById('profileForm').addEventListener('submit', async e => {
+        e.preventDefault();
+        const btn = e.target.querySelector('button[type="submit"]');
+        const st = document.getElementById('pfStatus');
+        const phoneVal = document.getElementById('pf-phone').value.trim();
+        if (phoneVal && !/^\+?[0-9\s()-]{6,20}$/.test(phoneVal)) {
+          st.textContent = 'Please enter a valid phone number.';
+          st.className = 'form-status is-error';
+          return;
+        }
+        btn.disabled = true;
+        st.textContent = 'Saving…'; st.className = 'form-status';
+        try {
+          profile = await updateProfile({
+            full_name: document.getElementById('pf-name').value,
+            phone: phoneVal
+          });
+          renderProfile(false, 'Your profile has been updated.');
+        } catch (err) {
+          btn.disabled = false;
+          st.textContent = friendlyError(err);
+          st.className = 'form-status is-error';
+        }
+      });
+    } else {
+      document.getElementById('pfEdit').addEventListener('click', () => renderProfile(true));
+    }
+  }
+
+  /* ================= ADDRESSES ======================================== */
+  let addresses = [];
+  let addrEditingId = null;
+  let addrFormOpen = false;
+
+  const addressCard = a => `
+    <article class="addr-card${a.is_default ? ' is-default' : ''}">
+      ${a.is_default ? '<span class="addr-flag">Default</span>' : ''}
+      <p class="addr-name">${esc(a.full_name) || '—'}</p>
+      <p class="addr-lines">${[a.line1, a.line2, a.city, a.state, a.postal_code, a.country]
+        .filter(Boolean).map(esc).join(', ')}</p>
+      ${a.phone ? `<p class="addr-phone">${esc(a.phone)}</p>` : ''}
+      <div class="addr-actions">
+        <button type="button" data-edit="${a.id}">Edit</button>
+        ${a.is_default ? '' : `<button type="button" data-default="${a.id}">Set as default</button>`}
+        <button type="button" class="addr-del" data-del="${a.id}">Delete</button>
+      </div>
+    </article>`;
+
+  const addressForm = a => `
+    <section class="acct-panel">
+      <div class="acct-panel-head"><h2>${a ? 'Edit Address' : 'Add New Address'}</h2></div>
+      <form id="addrForm" novalidate>
+        <div class="field">
+          <label for="ad-label">Label</label>
+          <input id="ad-label" type="text" value="${esc(a && a.label)}" placeholder="Home, Office…">
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="ad-name">Full Name</label>
+            <input id="ad-name" type="text" autocomplete="name" value="${esc(a && a.full_name)}">
+          </div>
+          <div class="field">
+            <label for="ad-phone">Phone Number</label>
+            <input id="ad-phone" type="tel" inputmode="tel" autocomplete="tel" value="${esc(a && a.phone)}">
+          </div>
+        </div>
+        <div class="field">
+          <label for="ad-l1">Address Line 1 *</label>
+          <input id="ad-l1" type="text" required autocomplete="address-line1" value="${esc(a && a.line1)}">
+        </div>
+        <div class="field">
+          <label for="ad-l2">Address Line 2</label>
+          <input id="ad-l2" type="text" autocomplete="address-line2" value="${esc(a && a.line2)}">
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="ad-city">City *</label>
+            <input id="ad-city" type="text" required autocomplete="address-level2" value="${esc(a && a.city)}">
+          </div>
+          <div class="field">
+            <label for="ad-state">State / Region</label>
+            <input id="ad-state" type="text" autocomplete="address-level1" value="${esc(a && a.state)}">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="ad-zip">Postal Code</label>
+            <input id="ad-zip" type="text" inputmode="numeric" autocomplete="postal-code" value="${esc(a && a.postal_code)}">
+          </div>
+          <div class="field">
+            <label for="ad-country">Country</label>
+            <input id="ad-country" type="text" autocomplete="country-name"
+                   value="${esc((a && a.country) || 'India')}">
+          </div>
+        </div>
+        <label class="switch">
+          <input id="ad-default" type="checkbox"${a && a.is_default ? ' checked' : ''}>
+          <span>Set as my default address</span>
+        </label>
+        <div class="acct-actions">
+          <button class="btn" type="submit">Save Address</button>
+          <button class="btn btn-ghost" type="button" id="adCancel">Cancel</button>
+        </div>
+        <p class="form-status" id="adStatus" role="status" aria-live="polite"></p>
+      </form>
+    </section>`;
+
+  async function renderAddresses(note) {
+    const panel = document.getElementById('addressPanel');
+
+    if (addrFormOpen) {
+      const a = addrEditingId ? addresses.find(x => x.id === addrEditingId) : null;
+      panel.innerHTML = addressForm(a);
+      document.getElementById('adCancel').addEventListener('click', () => {
+        addrFormOpen = false; addrEditingId = null; renderAddresses();
+      });
+      document.getElementById('addrForm').addEventListener('submit', async e => {
+        e.preventDefault();
+        const btn = e.target.querySelector('button[type="submit"]');
+        const st = document.getElementById('adStatus');
+        btn.disabled = true;
+        st.textContent = 'Saving…'; st.className = 'form-status';
+        try {
+          await saveAddress({
+            label: document.getElementById('ad-label').value,
+            full_name: document.getElementById('ad-name').value,
+            phone: document.getElementById('ad-phone').value,
+            line1: document.getElementById('ad-l1').value,
+            line2: document.getElementById('ad-l2').value,
+            city: document.getElementById('ad-city').value,
+            state: document.getElementById('ad-state').value,
+            postal_code: document.getElementById('ad-zip').value,
+            country: document.getElementById('ad-country').value,
+            is_default: document.getElementById('ad-default').checked
+          }, addrEditingId);
+          addresses = await listAddresses();
+          addrFormOpen = false; addrEditingId = null;
+          renderAddresses('Your address has been saved.');
+        } catch (err) {
+          btn.disabled = false;
+          st.textContent = friendlyError(err);
+          st.className = 'form-status is-error';
+        }
+      });
+      return;
+    }
+
+    panel.innerHTML = `
+      <section class="acct-panel">
+        <div class="acct-panel-head">
+          <h2>My Addresses</h2>
+          <button class="acct-link" type="button" id="addrAdd">Add New Address</button>
+        </div>
+        ${addresses.length
+          ? `<div class="addr-grid">${addresses.map(addressCard).join('')}</div>`
+          : `<p class="acct-empty">No saved addresses yet.</p>`}
+        <p class="form-status ${note ? 'is-ok' : ''}" id="addrStatus" role="status" aria-live="polite">${note || ''}</p>
+      </section>`;
+
+    document.getElementById('addrAdd').addEventListener('click', () => {
+      addrFormOpen = true; addrEditingId = null; renderAddresses();
+    });
+
+  }
+
+  /* One delegated listener for the whole address panel. Attached once, so
+     re-rendering the list never stacks duplicates or drops the handler. */
+  document.getElementById('addressPanel').addEventListener('click', async e => {
+    const ed = e.target.closest('[data-edit]');
+    const df = e.target.closest('[data-default]');
+    const dl = e.target.closest('[data-del]');
+    if (!ed && !df && !dl) return;
+    const st = document.getElementById('addrStatus');
+    const fail = err => { if (st) { st.textContent = friendlyError(err); st.className = 'form-status is-error'; } };
+
+    if (ed) { addrFormOpen = true; addrEditingId = ed.dataset.edit; return renderAddresses(); }
+
+    if (df) {
+      try { await setDefaultAddress(df.dataset.default);
+            addresses = await listAddresses();
+            renderAddresses('Default address updated.'); }
+      catch (err) { fail(err); }
+      return;
+    }
+
+    if (dl) {
+      if (!confirm('Delete this address?')) return;
+      try { await deleteAddress(dl.dataset.del);
+            addresses = await listAddresses();
+            renderAddresses('Address deleted.'); }
+      catch (err) { fail(err); }
+    }
+  });
+
+  /* ================= READ-ONLY SECTIONS =============================== */
+  const emptyPanel = (title, msg, href, cta) => `
+    <section class="acct-panel">
+      <div class="acct-panel-head"><h2>${title}</h2></div>
+      <p class="acct-empty">${msg}</p>
+      ${href ? `<div class="acct-empty-cta">
+        <a class="btn btn-ghost btn-sm" href="${href}">${cta}</a></div>` : ''}
+    </section>`;
+
+  /* ---- initial load --------------------------------------------------- */
+  await renderProfile(false);
+
+  try { addresses = await listAddresses(); } catch { addresses = []; }
+  await renderAddresses();
+
+  const rows = async (table, cols) => {
+    try { return await accountRows(table, cols); } catch { return null; }
+  };
+
+  const [orders, wish, cartRows] = await Promise.all([
+    rows('orders', 'id, order_number, status, total, placed_at'),
+    rows('wishlist', 'id, product_id'),
+    rows('cart', 'id, product_id, size_ml, qty')
+  ]);
+
+  document.getElementById('ordersPanel').innerHTML = !orders
+    ? emptyPanel('My Orders', 'This section will be available shortly.')
+    : !orders.length
+      ? emptyPanel('My Orders', 'No orders yet.', 'collection.html', 'Explore the Collection')
+      : `<section class="acct-panel"><div class="acct-panel-head"><h2>My Orders</h2></div>
+         <dl class="acct-rows">${orders.map(o => `<div>
+           <dt>${esc(o.order_number || o.id.slice(0,8))}</dt>
+           <dd>${esc(o.status)} &middot; ${money(o.total)}</dd></div>`).join('')}</dl></section>`;
+
+  document.getElementById('wishlistPanel').innerHTML = !wish
+    ? emptyPanel('Wishlist', 'This section will be available shortly.')
+    : !wish.length
+      ? emptyPanel('Wishlist', 'Your wishlist is empty.', 'collection.html', 'Explore the Collection')
+      : emptyPanel('Wishlist', `${wish.length} fragrance${wish.length===1?'':'s'} saved.`);
+
+  document.getElementById('cartPanel').innerHTML = !cartRows
+    ? emptyPanel('Cart', 'This section will be available shortly.')
+    : !cartRows.length
+      ? emptyPanel('Cart', 'Your cart is empty.', 'collection.html', 'Explore the Collection')
+      : emptyPanel('Cart', `${cartRows.length} item${cartRows.length===1?'':'s'} in your cart.`);
+
+  initReveal();
+};
+</script>
+</body>
+</html>

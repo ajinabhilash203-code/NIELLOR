@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The House — NIELLOR</title>
+<meta name="description" content="The NIELLOR house — brand identity, values, and the people we create for.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header id="site-header"></header>
+
+<main>
+
+  <section class="page-head">
+    <div class="wrap">
+      <h1 class="display-lg" data-reveal>The House</h1>
+      <p class="sub-serif" data-reveal>Timeless scents. Unforgettable impressions.</p>
+      <div class="rule"><i></i></div>
+    </div>
+  </section>
+
+  <!-- Brand identity -->
+  <section class="section-pad" style="padding-top:clamp(1.5rem,3vw,2.5rem)">
+    <div class="wrap">
+      <div class="framed">
+        <div class="section-head">
+          <h2 class="display-lg" data-reveal>Our Brand Identity</h2>
+          <p class="sub-caps" data-reveal>The essence of modern luxury</p>
+          <div class="rule"><i></i></div>
+        </div>
+        <div class="pillars" id="pillars"></div>
+        <div class="pull-quote" data-reveal>
+          <p class="serif-quote">
+            <span class="qm">&ldquo;</span>
+            Luxury is not about excess,<br>it&rsquo;s about creating something unforgettable.
+            <span class="qm">&rdquo;</span>
+          </p>
+          <div class="rule"><i></i></div>
+          <p class="brand-sign wordmark">Niellor<em>Eau de Parfum</em></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Values -->
+  <section class="section-pad" style="background:var(--ivory-deep)" id="values">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 class="display-lg" data-reveal>Our Values</h2>
+        <div class="rule"><i></i></div>
+      </div>
+      <div class="values-grid" id="valuesGrid"></div>
+    </div>
+  </section>
+
+  <!-- Audience -->
+  <section class="section-pad">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 class="display-lg" data-reveal>Our Target Audience</h2>
+        <p class="sub-serif" data-reveal>Crafted for those who value quality, elegance and individuality</p>
+        <div class="rule"><i></i></div>
+      </div>
+      <div class="audience-grid">
+        <div class="aud-cards" id="audCards"></div>
+        <div class="aud-facts" id="audFacts"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why -->
+  <section class="section-pad" style="background:var(--ivory-deep)">
+    <div class="wrap">
+      <div class="framed">
+        <div class="section-head">
+          <h2 class="display-lg" data-reveal>Why Choose Niellor</h2>
+          <p class="sub-serif" data-reveal>Luxury beyond fragrance</p>
+          <div class="rule"><i></i></div>
+        </div>
+        <div class="pillars" id="why"></div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div id="site-footer"></div>
+
+<script src="js/products.js"></script>
+<script src="js/auth-config.js"></script>
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+<script>
+window.pageInit = function () {
+
+  const pillarHTML = (list, target, oval) => {
+    document.getElementById(target).innerHTML = list.map(p => `
+      <div class="pillar${oval ? ' oval' : ''}" data-reveal>
+        <div class="pillar-icon">${ICON[p.icon]}</div>
+        <h4>${p.t}</h4>
+        <p>${p.d}</p>
+      </div>`).join('');
+  };
+
+  pillarHTML([
+    { icon: 'hourglass', t: 'Timeless',    d: 'Classic designs and fragrances that never go out of style.' },
+    { icon: 'diamond',   t: 'Premium',     d: 'Exceptional ingredients, refined craftsmanship, and uncompromising quality.' },
+    { icon: 'leaf',      t: 'Sustainable', d: 'Thoughtfully created with respect for people and the environment.' },
+    { icon: 'minimal',   t: 'Minimal',     d: 'Clean aesthetics inspired by elegance and simplicity.' },
+    { icon: 'heart',     t: 'Authentic',   d: 'Every fragrance tells a genuine story and reflects individuality.' }
+  ], 'pillars', true);
+
+  const values = [
+    { icon: 'sparkle', t: 'Timeless Elegance', d: 'Creating fragrances that remain sophisticated and relevant for every generation.' },
+    { icon: 'diamond', t: 'Premium Quality',   d: 'Crafted with carefully selected ingredients to ensure exceptional performance and lasting impressions.' },
+    { icon: 'leaf',    t: 'Sustainability',    d: 'Committed to responsible sourcing, eco-conscious packaging, and a greener future.' },
+    { icon: 'bottle',  t: 'Individuality',     d: 'Every fragrance is designed to celebrate personality, confidence, and self-expression.' }
+  ];
+  document.getElementById('valuesGrid').innerHTML = values.map(v => `
+    <div class="value" data-reveal>
+      <div class="value-icon">${ICON[v.icon]}</div>
+      <h3>${v.t}</h3>
+      <p>${v.d}</p>
+    </div>`).join('');
+
+  /* Audience — independent image objects */
+  const audIcon = { women: 'flower', unisex: 'leaf', men: 'wood' };
+  document.getElementById('audCards').innerHTML = NIELLOR_AUDIENCE.map(a => `
+    <article class="aud-card" data-reveal>
+      <div class="aud-visual">
+        ${media(a.image, { sizes: '(max-width: 900px) 90vw, 22vw' })}
+        <span class="aud-badge">${ICON[audIcon[a.key]] || ICON.sparkle}</span>
+      </div>
+      <div class="aud-card-body">
+        <h4>${a.title}</h4>
+        <p>${a.text}</p>
+      </div>
+    </article>`).join('');
+
+  const facts = [
+    { icon: 'users', t: 'Age Group',        d: '20 – 45 years. Professionals, entrepreneurs, creatives, and fragrance enthusiasts who appreciate timeless luxury and premium craftsmanship.' },
+    { icon: 'globe', t: 'Lifestyle',        d: 'Modern, ambitious, and style-conscious individuals who value quality and elegance in every aspect of their lives.' },
+    { icon: 'bag',   t: 'Buying Behaviour', d: 'They value premium quality, long-lasting fragrances, and memorable brand experiences over trends and price.' },
+    { icon: 'heart', t: 'What They Value',  d: 'Authenticity, craftsmanship, sustainability, individuality, and timeless design.' }
+  ];
+  document.getElementById('audFacts').innerHTML = facts.map(f => `
+    <div class="aud-fact" data-reveal>
+      <div class="aud-fact-icon">${ICON[f.icon]}</div>
+      <div><h4>${f.t}</h4><p>${f.d}</p></div>
+    </div>`).join('');
+
+  pillarHTML([
+    { icon: 'diamond', t: 'Premium Craftsmanship', d: 'Made with carefully selected ingredients and meticulous attention to detail.' },
+    { icon: 'flower',  t: 'Signature Scents',      d: 'Distinctive fragrances designed to reflect personality and confidence.' },
+    { icon: 'leaf',    t: 'Sustainable Luxury',    d: 'Eco-conscious packaging and responsible sourcing without compromising elegance.' },
+    { icon: 'minimal', t: 'Timeless Design',       d: 'Minimalist aesthetics that remain sophisticated across generations.' },
+    { icon: 'gift',    t: 'Memorable Experience',  d: 'From the first impression to the final note, designed to create a lasting connection.' }
+  ], 'why');
+
+  initReveal();
+};
+</script>
+</body>
+</html>

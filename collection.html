@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Collection — NIELLOR</title>
+<meta name="description" content="The NIELLOR signature collection — Roselle, Aéris and Valenor eau de parfum.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header id="site-header"></header>
+
+<main>
+
+  <section class="page-head">
+    <div class="wrap">
+      <h1 class="display-lg" data-reveal>The Collection</h1>
+      <p class="sub-serif" data-reveal>Discover your signature scent</p>
+      <div class="rule"><i></i></div>
+      <p class="lede" style="margin-inline:auto; text-align:center" data-reveal>
+        Each NIELLOR fragrance is an eau de parfum, available in three sizes.
+      </p>
+    </div>
+  </section>
+
+  <!-- Filter — built from the catalogue, so it grows with it -->
+  <section class="wrap" style="text-align:center; padding-bottom:2.5rem">
+    <div class="size-opts" id="filter" style="justify-content:center" data-reveal></div>
+  </section>
+
+  <section style="padding-bottom:clamp(4rem,9vw,7rem)">
+    <div class="wrap">
+      <div class="collection-grid" id="grid"></div>
+    </div>
+  </section>
+
+  <!-- Side by side -->
+  <section class="section-pad" style="background:var(--ivory-deep)">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 class="display-lg" data-reveal>Compare</h2>
+        <p class="sub-serif" data-reveal>The collection at a glance</p>
+        <div class="rule"><i></i></div>
+      </div>
+
+      <div class="table-scroll" data-reveal>
+        <table id="compare"></table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Assurances -->
+  <section class="section-pad">
+    <div class="wrap">
+      <div class="pillars" id="assure"></div>
+    </div>
+  </section>
+
+</main>
+
+<div id="site-footer"></div>
+
+<script src="js/products.js"></script>
+<script src="js/auth-config.js"></script>
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+<script>
+window.pageInit = function () {
+
+  const grid = document.getElementById('grid');
+
+  function paint(filter) {
+    const list = filter === 'all'
+      ? NIELLOR_PRODUCTS
+      : NIELLOR_PRODUCTS.filter(p => p.id === filter);
+
+    grid.innerHTML = list.map(p => `
+      <article class="p-card" data-reveal data-ambient="${p.tint}">
+        <a class="p-card-media" href="product.html?id=${p.id}" style="--card-tint:${p.tint}">
+          ${productMedia(p, { sizes: '(max-width: 900px) 90vw, 30vw' })}
+          <span class="p-quick">
+            <button class="btn btn-sm btn-full" data-add="${p.id}">Add to Bag</button>
+          </span>
+        </a>
+        <div class="p-card-body">
+          <h3>${p.shortName}</h3>
+          <p class="p-mood">${p.mood}</p>
+          <p>${p.description}</p>
+          <div class="p-family">
+            <em>${p.family}</em>
+            <span class="p-price"><small>from</small> ${money(priceFrom(p))}</span>
+          </div>
+        </div>
+      </article>`).join('');
+
+    initReveal();
+    initAmbient();
+  }
+
+  /* Filter pills, generated from the catalogue */
+  const filterEl = document.getElementById('filter');
+  filterEl.innerHTML = [{ id: 'all', shortName: 'All' }, ...NIELLOR_PRODUCTS]
+    .map((f, i) => `<button class="size-opt${i === 0 ? ' sel' : ''}" data-f="${f.id}">${f.shortName}</button>`)
+    .join('');
+  filterEl.addEventListener('click', e => {
+    const b = e.target.closest('[data-f]');
+    if (!b) return;
+    filterEl.querySelectorAll('.size-opt').forEach(x => x.classList.remove('sel'));
+    b.classList.add('sel');
+    paint(b.dataset.f);
+  });
+  paint('all');
+
+  /* Comparison — only fields we actually hold */
+  const rows = [
+    ['Category',      p => p.category],
+    ['Line',          p => p.line || '—'],
+    ['Family',        p => p.family],
+    ['Character',     p => p.mood],
+    ['Concentration', p => p.concentration],
+    ...NIELLOR_SIZES.map(s => [`${s.ml} ml`, p => money(priceOf(p, s.ml))])
+  ];
+
+  document.getElementById('compare').innerHTML = `
+    <thead>
+      <tr>
+        <th></th>
+        ${NIELLOR_PRODUCTS.map(p => `<th>${p.shortName}</th>`).join('')}
+      </tr>
+    </thead>
+    <tbody>
+      ${rows.map(([label, fn]) => `
+        <tr>
+          <td class="rowlabel">${label}</td>
+          ${NIELLOR_PRODUCTS.map(p => `<td>${fn(p)}</td>`).join('')}
+        </tr>`).join('')}
+      <tr>
+        <td></td>
+        ${NIELLOR_PRODUCTS.map(p => `
+          <td><a class="btn btn-sm" href="product.html?id=${p.id}">Discover</a></td>`).join('')}
+      </tr>
+    </tbody>`;
+
+  /* Assurances — payment is stated because it is a decision we have made;
+     delivery and returns only appear once those policies are set. */
+  const assure = [
+    { icon: 'upi',   t: 'UPI &amp; Cards', d: 'Pay by UPI, credit or debit card, or net banking.' },
+    { icon: 'gift',  t: 'Gift Boxed',      d: 'Presented in NIELLOR packaging, ready to give.' },
+    { icon: 'leaf',  t: 'Responsible',     d: 'Recyclable materials and responsible design.' }
+  ];
+  if (NIELLOR_POLICY.freeShippingOver) {
+    assure.push({ icon: 'truck', t: 'Free Delivery',
+      d: `On orders over ${money(NIELLOR_POLICY.freeShippingOver)}.` });
+  }
+  document.getElementById('assure').innerHTML = assure.map(a => `
+    <div class="pillar" data-reveal>
+      <div class="pillar-icon">${ICON[a.icon]}</div>
+      <h4>${a.t}</h4>
+      <p>${a.d}</p>
+    </div>`).join('');
+
+  initReveal();
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Contact — NIELLOR</title>
+<meta name="description" content="Contact NIELLOR — client care, fragrance advice and stockist enquiries.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header id="site-header"></header>
+
+<main>
+
+  <section class="page-head">
+    <div class="wrap">
+      <h1 class="display-lg" data-reveal>Contact</h1>
+      <p class="sub-serif" data-reveal>Let&rsquo;s build something timeless</p>
+      <div class="rule"><i></i></div>
+      <p class="lede" style="margin-inline:auto; text-align:center" data-reveal>
+        Whether you are looking for your signature scent or stocking NIELLOR,
+        we would like to hear from you.
+      </p>
+    </div>
+  </section>
+
+  <section class="section-pad" style="padding-top:clamp(1.5rem,3vw,2.5rem)">
+    <div class="wrap contact-grid">
+
+      <div data-reveal>
+        <h2 class="display-md">Send a Message</h2>
+        <div class="rule left"><i></i></div>
+
+        <form id="contactForm" style="margin-top:2rem" novalidate>
+          <div class="field">
+            <label for="name">Your Name</label>
+            <input id="name" name="name" type="text" required autocomplete="name" placeholder="Full name">
+          </div>
+          <div class="field">
+            <label for="email">Email Address</label>
+            <input id="email" name="email" type="email" required autocomplete="email" placeholder="you@example.com">
+          </div>
+          <div class="field">
+            <label for="subject">Reason for Contact</label>
+            <select id="subject" name="subject">
+              <option>Client care &amp; orders</option>
+              <option>Fragrance advice</option>
+              <option>Wholesale &amp; stockist enquiry</option>
+              <option>Press &amp; collaboration</option>
+              <option>Future fragrance waitlist</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" required placeholder="Tell us what you are looking for"></textarea>
+          </div>
+
+          <!-- Honeypot: real people never fill this in -->
+          <div class="hp" aria-hidden="true">
+            <label for="company">Company</label>
+            <input id="company" name="_gotcha" type="text" tabindex="-1" autocomplete="off">
+          </div>
+
+          <button class="btn" type="submit" id="contactSubmit">Send Message</button>
+          <p class="form-status" id="formStatus" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+
+      <div>
+        <h2 class="display-md" data-reveal>Reach Us Directly</h2>
+        <div class="rule left"><i></i></div>
+        <div class="contact-cards" style="margin-top:2rem" id="cards"></div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="section-pad" style="background:var(--ivory-deep)">
+    <div class="wrap-narrow">
+      <div class="section-head">
+        <h2 class="display-lg" data-reveal>Frequently Asked</h2>
+        <div class="rule"><i></i></div>
+      </div>
+      <div class="acc" id="faq" data-reveal></div>
+    </div>
+  </section>
+
+</main>
+
+<div id="site-footer"></div>
+
+<script src="js/products.js"></script>
+<script src="js/auth-config.js"></script>
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+<script>
+window.pageInit = function () {
+
+  /* Social accounts first — these are real. Everything else stays generic
+     until you supply an email or phone number. */
+  const socialCards = activeSocials().map(s => ({
+    icon: s.icon,
+    t: s.label,
+    d: s.handle,
+    url: s.url
+  }));
+
+  const cards = [
+    { icon: 'mail',  t: 'Email',     d: NIELLOR_CONTACT.email,
+      url: 'mailto:' + NIELLOR_CONTACT.email, sameTab: true },
+    ...socialCards,
+    { icon: 'globe', t: 'Enquiries', d: 'Client care, wholesale<br>and stockist' },
+    { icon: 'upi',   t: 'Payment',   d: 'UPI, cards and net banking' }
+  ];
+
+  document.getElementById('cards').innerHTML = cards.map(c => {
+    const inner = `
+      <div class="contact-card-icon">${ICON[c.icon]}</div>
+      <div><h4>${c.t}</h4><p>${c.d}</p></div>`;
+    if (!c.url) return `<div class="contact-card" data-reveal>${inner}</div>`;
+    /* mailto opens the visitor's own mail app, so it must not target _blank */
+    const attrs = c.sameTab ? '' : ' target="_blank" rel="noopener noreferrer"';
+    return `<a class="contact-card" href="${c.url}"${attrs} data-reveal>${inner}</a>`;
+  }).join('');
+
+  /* Only questions we can answer truthfully today. Delivery, returns and
+     longevity are added automatically once those policies are set in
+     NIELLOR_POLICY, rather than being invented here. */
+  const faq = [
+    { q: 'Which fragrance should I start with?',
+      d: 'The signature collection is ' + NIELLOR_PRODUCTS.map(p => p.shortName + ' (' + (p.descriptors || [p.family]).join(', ').toLowerCase() + ')').join('; ')
+         + '. The Scent Finder on the home page will point you to the one that suits you.' },
+    { q: 'What sizes are available?',
+      d: NIELLOR_SIZES.map(s => `${s.ml} ml at ${money(s.price)}`).join(', ') + '.'
+         + (NIELLOR_POLICY.gstInclusive ? ' All prices include GST.' : '') },
+    { q: 'How can I pay?',
+      d: 'UPI, credit and debit cards, and net banking.' },
+    { q: 'Do you offer wholesale or stockist accounts?',
+      d: 'Yes. Select "Wholesale &amp; stockist enquiry" in the form and include your business name, location and the categories you currently carry.' },
+    { q: 'Can I order a personalised bottle or corporate gift?',
+      d: 'Get in touch with the quantity and occasion, and we will come back to you with options.' }
+  ];
+
+  if (NIELLOR_POLICY.deliveryWindow) {
+    faq.push({ q: 'How long does delivery take?',
+      d: `Orders are delivered in ${NIELLOR_POLICY.deliveryWindow}.`
+         + (NIELLOR_POLICY.freeShippingOver
+             ? ` Delivery is free on orders over ${money(NIELLOR_POLICY.freeShippingOver)}.` : '') });
+  }
+  if (NIELLOR_POLICY.returnWindow) {
+    faq.push({ q: 'What is your returns policy?',
+      d: `Unopened items may be returned within ${NIELLOR_POLICY.returnWindow} of delivery.` });
+  }
+
+  document.getElementById('faq').innerHTML = faq.map(f => `
+    <div class="acc-item">
+      <button class="acc-head">${f.q} <i></i></button>
+      <div class="acc-panel"><div class="acc-panel-inner">${f.d}</div></div>
+    </div>`).join('');
+
+  /* Arriving from a "Join the Waitlist" card preselects that reason */
+  if (new URLSearchParams(location.search).get('interest') === 'waitlist') {
+    const sel = document.getElementById('subject');
+    const opt = [...sel.options].find(o => /waitlist/i.test(o.textContent));
+    if (opt) sel.value = opt.value;
+    document.getElementById('contactForm')
+      .scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  initAccordion();
+  initReveal();
+  initContactForm();
+};
+
+/* --------------------------------------------------------------------------
+   Contact form
+   Two real delivery paths, never a fake confirmation:
+
+   1. If NIELLOR_CONTACT.formEndpoint is set, the message is POSTed there and
+      success is only reported when the service confirms it. Failures are
+      shown, with the email address as a fallback.
+   2. If no endpoint is configured yet, the form opens a pre-filled draft in
+      the visitor's own mail app addressed to NIELLOR. The message is still
+      genuinely delivered, and the wording says exactly what happened.
+
+   No API key or secret is used here. A form endpoint URL is public by design;
+   anything private belongs on a server, never in this file.
+   -------------------------------------------------------------------------- */
+function initContactForm() {
+  const form   = document.getElementById('contactForm');
+  if (!form) return;
+  const status = document.getElementById('formStatus');
+  const button = document.getElementById('contactSubmit');
+
+  const set = (msg, state) => {
+    status.textContent = msg;
+    status.className = 'form-status' + (state ? ' is-' + state : '');
+  };
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+
+    const data = Object.fromEntries(new FormData(form).entries());
+
+    if (data._gotcha) return;                       // silently drop bots
+
+    if (!data.name?.trim() || !data.message?.trim()) {
+      return set('Please add your name and a message.', 'error');
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email || '')) {
+      return set('Please enter a valid email address.', 'error');
+    }
+
+    const endpoint = (NIELLOR_CONTACT.formEndpoint || '').trim();
+
+    /* ---- Path 1: a configured form service ---- */
+    if (endpoint) {
+      button.disabled = true;
+      set('Sending…');
+      try {
+        const res = await fetch(endpoint, {
+          method: 'POST',
+          headers: { Accept: 'application/json' },
+          body: new FormData(form)
+        });
+        if (!res.ok) throw new Error('Status ' + res.status);
+        form.reset();
+        set('Thank you — your message has been sent to NIELLOR. We will reply to '
+            + data.email + '.', 'ok');
+      } catch (err) {
+        set('Sorry, the message could not be sent. Please email us directly at '
+            + NIELLOR_CONTACT.email + '.', 'error');
+      } finally {
+        button.disabled = false;
+      }
+      return;
+    }
+
+    /* ---- Path 2: hand the message to the visitor's mail app ---- */
+    const subject = `NIELLOR enquiry — ${data.subject || 'General'}`;
+    const body =
+      `Name: ${data.name}\nEmail: ${data.email}\nReason: ${data.subject || '—'}\n\n${data.message}\n`;
+
+    window.location.href = `mailto:${NIELLOR_CONTACT.email}`
+      + `?subject=${encodeURIComponent(subject)}`
+      + `&body=${encodeURIComponent(body)}`;
+
+    set('Your email app is opening with this message ready to send to '
+        + NIELLOR_CONTACT.email + '. Press send there to deliver it.', 'ok');
+  });
+}
+</script>
+</body>
+</html>

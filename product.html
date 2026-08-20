@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fragrance — NIELLOR</title>
+<meta name="description" content="Discover a NIELLOR eau de parfum.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header id="site-header"></header>
+
+<main>
+
+  <section style="padding-block:clamp(2rem,5vw,3.5rem) clamp(4rem,8vw,6rem)">
+    <div class="wrap">
+      <nav class="crumbs" id="crumbs"></nav>
+      <div class="pdp">
+        <div class="pdp-figure">
+          <div class="pdp-media" id="pdpMedia"></div>
+          <div class="pdp-gallery" id="pdpGallery"></div>
+        </div>
+        <div class="pdp-body" id="pdpBody"></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-pad" style="background:var(--ivory-deep)">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 class="display-md" data-reveal>The Collection</h2>
+        <div class="rule"><i></i></div>
+      </div>
+      <div class="collection-grid" id="also"></div>
+    </div>
+  </section>
+
+</main>
+
+<div id="site-footer"></div>
+
+<script src="js/products.js"></script>
+<script src="js/auth-config.js"></script>
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+<script>
+window.pageInit = function () {
+
+  const id = new URLSearchParams(location.search).get('id');
+  const p  = getProduct(id) || NIELLOR_PRODUCTS[0];
+
+  document.title = `${p.name} — NIELLOR`;
+
+  document.getElementById('crumbs').innerHTML =
+    `<a href="index.html">Home</a><span>/</span><a href="collection.html">Collection</a><span>/</span>${p.shortName}`;
+
+  /* Main image — this product's own object */
+  const mediaEl = document.getElementById('pdpMedia');
+  mediaEl.style.setProperty('--pdp-tint', p.tint);
+  mediaEl.innerHTML = productMedia(p, { eager: true, sizes: '(max-width: 900px) 92vw, 48vw' });
+
+  /* Gallery, when this product has extra images of its own */
+  const gal = document.getElementById('pdpGallery');
+  const shots = [p.image, ...(p.gallery || [])].filter(im => im && im.src);
+  gal.innerHTML = shots.length > 1
+    ? shots.map((im, i) => `
+        <button class="pdp-thumb${i === 0 ? ' sel' : ''}" data-shot="${i}">
+          ${media(im)}
+        </button>`).join('')
+    : '';
+  gal.addEventListener('click', e => {
+    const b = e.target.closest('[data-shot]');
+    if (!b) return;
+    gal.querySelectorAll('.pdp-thumb').forEach(t => t.classList.remove('sel'));
+    b.classList.add('sel');
+    mediaEl.innerHTML = media(shots[+b.dataset.shot], { eager: true });
+  });
+
+  /* Body */
+  let size = NIELLOR_DEFAULT_ML;
+  const sizes = sizesOf(p);
+
+  function paintBody() {
+    const price = priceOf(p, size);
+
+    /* Only the details we actually hold */
+    const details = [
+      ['Category', p.category],
+      ['Line', p.line],
+      ['Fragrance family', p.family],
+      ['Concentration', p.concentration],
+      ['Size', size + ' ml']
+    ].filter(([, v]) => v);
+
+    document.getElementById('pdpBody').innerHTML = `
+      <p class="eyebrow">${p.family}</p>
+      <h1 class="wordmark">${p.shortName}</h1>
+      <p class="pdp-mood">${p.mood}</p>
+
+      <p class="pdp-price">${money(price)}<small>${size} ml${
+        NIELLOR_POLICY.gstInclusive ? ' &middot; incl. GST' : ''}</small></p>
+
+      <p class="pdp-desc">${p.description}</p>
+
+      <p class="eyebrow" style="margin-bottom:.9rem">Select Size</p>
+      <div class="size-opts" id="sizes">
+        ${sizes.map(s => `
+          <button class="size-opt${s.ml === size ? ' sel' : ''}" data-ml="${s.ml}">
+            ${s.ml} ml &middot; ${money(s.price)}
+            ${s.tag ? `<em class="size-tag">${s.tag}</em>` : ''}
+          </button>`).join('')}
+      </div>
+
+      <div class="pdp-actions">
+        <button class="btn" id="addBtn"${p.available ? '' : ' disabled'}>
+          ${p.available ? `Add to Bag &mdash; ${money(price)}` : 'Currently unavailable'}
+        </button>
+        <a class="btn btn-ghost" href="collection.html">Compare</a>
+      </div>
+
+      <dl class="pdp-specs">
+        ${details.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('')}
+      </dl>
+
+      ${p.notes ? `
+        <div class="acc">
+          <div class="acc-item">
+            <button class="acc-head">Fragrance Notes <i></i></button>
+            <div class="acc-panel"><div class="acc-panel-inner">${p.notes}</div></div>
+          </div>
+        </div>` : ''}
+
+      <div class="pdp-perks">
+        <div class="pdp-perk">${ICON.upi}<span>UPI, cards and net banking accepted</span></div>
+        <div class="pdp-perk">${ICON.gift}<span>Presented in NIELLOR packaging</span></div>
+        ${NIELLOR_POLICY.deliveryWindow
+          ? `<div class="pdp-perk">${ICON.truck}<span>Delivered in ${NIELLOR_POLICY.deliveryWindow}</span></div>` : ''}
+      </div>`;
+
+    document.getElementById('sizes').addEventListener('click', e => {
+      const b = e.target.closest('[data-ml]');
+      if (!b) return;
+      size = +b.dataset.ml;
+      paintBody();
+    });
+
+    const add = document.getElementById('addBtn');
+    if (p.available) add.addEventListener('click', () => Cart.add(p.id, size));
+
+    initAccordion();
+  }
+
+  paintBody();
+
+  /* The rest of the collection — each with its own image */
+  document.getElementById('also').innerHTML = NIELLOR_PRODUCTS
+    .filter(x => x.id !== p.id)
+    .map(x => `
+      <article class="p-card" data-reveal data-ambient="${x.tint}">
+        <a class="p-card-media" href="product.html?id=${x.id}" style="--card-tint:${x.tint}">
+          ${productMedia(x, { sizes: '(max-width: 900px) 90vw, 30vw' })}
+          <span class="p-quick">
+            <button class="btn btn-sm btn-full" data-add="${x.id}">Add to Bag</button>
+          </span>
+        </a>
+        <div class="p-card-body">
+          <h3>${x.shortName}</h3>
+          <p class="p-mood">${x.mood}</p>
+          <p>${x.description}</p>
+          <div class="p-family">
+            <em>${x.family}</em>
+            <span class="p-price"><small>from</small> ${money(priceFrom(x))}</span>
+          </div>
+        </div>
+      </article>`).join('');
+
+  initReveal();
+  initAmbient();
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NIELLOR — Timeless Scents. Unforgettable Impressions.</title>
+<meta name="description" content="NIELLOR is a luxury fragrance house. Discover the signature collection — Roselle, Aéris and Valenor eau de parfum.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="preloader" id="preloader">
+  <div style="text-align:center">
+    <div class="preloader-mark">NIELLOR</div>
+    <div class="preloader-bar"><i></i></div>
+  </div>
+</div>
+
+<header id="site-header"></header>
+
+<main>
+
+  <!-- ===================== COVER ===================== -->
+  <section class="cover">
+    <div class="cover-inner wrap">
+      <div class="cover-copy">
+        <span class="cover-mark" aria-hidden="true">
+          <svg viewBox="0 0 64 88">
+            <rect x="4" y="4" width="56" height="80" rx="28"
+                  fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <text x="32" y="56" text-anchor="middle" fill="currentColor"
+                  font-family="Cormorant Garamond, Georgia, serif" font-size="40">N</text>
+            <path d="M44 22 l2 5 5 2 -5 2 -2 5 -2 -5 -5 -2 5 -2 z" fill="currentColor"/>
+          </svg>
+        </span>
+
+        <h1 class="cover-word">NIELLOR</h1>
+        <p class="cover-kicker">Timeless scents. Unforgettable impressions.</p>
+
+        <div class="rule on-dark"><i></i></div>
+
+        <p class="cover-lede">
+          An expression of identity, confidence and emotion.
+          A scent is the silent signature you leave behind.
+        </p>
+
+        <div class="cover-cta">
+          <a class="btn-outline" href="collection.html">Explore Collection</a>
+          <a class="btn-outline ghost" href="#finder">Find Your Scent</a>
+        </div>
+      </div>
+
+      <div class="cover-media" id="coverMedia"></div>
+    </div>
+  </section>
+
+  <div class="marquee" aria-hidden="true">
+    <div class="marquee-track" id="marquee"></div>
+  </div>
+
+  <!-- ===================== COLLECTION ===================== -->
+  <section class="section-pad" id="collection">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 class="display-lg" data-reveal>Signature Collection</h2>
+        <p class="sub-serif" data-reveal>Our three launch fragrances</p>
+        <div class="rule"><i></i></div>
+      </div>
+
+      <div class="collection-grid" id="collectionGrid"></div>
+
+      <p class="size-lead" data-reveal>Every fragrance comes in three sizes</p>
+      <div class="size-cards" id="sizeCards"></div>
+    </div>
+  </section>
+
+
+  <!-- ===================== CAMPAIGN / EDITORIAL ===================== -->
+  <section class="section-pad campaign-sec" id="campaign">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 class="display-lg" data-reveal>The Campaign</h2>
+        <p class="sub-serif" data-reveal>Roselle &middot; Aéris &middot; Valenor</p>
+        <div class="rule"><i></i></div>
+      </div>
+      <div class="campaign-grid" id="campaignGrid"></div>
+      <p class="campaign-note" data-reveal>Editorial imagery. Models are not brand representatives.</p>
+    </div>
+  </section>
+
+  <!-- ===================== TARGET AUDIENCE ===================== -->
+  <section class="section-pad" style="background:var(--ivory-deep)">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 class="display-lg" data-reveal>Our Target Audience</h2>
+        <p class="sub-serif" data-reveal>Crafted for those who value quality, elegance and individuality</p>
+        <div class="rule"><i></i></div>
+      </div>
+
+      <div class="audience-grid">
+        <div class="aud-cards" id="audCards"></div>
+        <div class="aud-facts" id="audFacts"></div>
+      </div>
+
+      <div class="pull-quote" data-reveal>
+        <p class="serif-quote">
+          <span class="qm">&ldquo;</span>
+          We create more than perfumes,<br>we create emotions that connect.
+          <span class="qm">&rdquo;</span>
+        </p>
+        <div class="rule"><i></i></div>
+        <p class="eyebrow">Niellor</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== BRAND IDENTITY ===================== -->
+  <section class="section-pad">
+    <div class="wrap">
+      <div class="framed">
+        <div class="section-head">
+          <h2 class="display-lg" data-reveal>Our Brand Identity</h2>
+          <p class="sub-caps" data-reveal>The essence of modern luxury</p>
+          <div class="rule"><i></i></div>
+        </div>
+
+        <div class="pillars" id="pillars"></div>
+
+        <div class="pull-quote" data-reveal>
+          <p class="serif-quote">
+            <span class="qm">&ldquo;</span>
+            Luxury is not about excess,<br>it&rsquo;s about creating something unforgettable.
+            <span class="qm">&rdquo;</span>
+          </p>
+          <div class="rule"><i></i></div>
+          <p class="brand-sign wordmark">Niellor<em>Eau de Parfum</em></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== SCENT FINDER ===================== -->
+  <section class="section-pad finder" id="finder">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow" data-reveal>The Scent Finder</p>
+        <h2 class="display-lg" data-reveal>Which NIELLOR<br>belongs to you?</h2>
+        <div class="rule"><i></i></div>
+        <p class="lede" data-reveal>
+          Three questions, and we will point you to the composition that suits you best.
+        </p>
+      </div>
+      <div class="quiz" id="quiz"></div>
+    </div>
+  </section>
+
+  <!-- ===================== VALUES ===================== -->
+  <section class="section-pad" id="values">
+    <div class="wrap">
+      <div class="framed leafed">
+        <div class="section-head">
+          <h2 class="display-lg" data-reveal>Our Values</h2>
+          <div class="rule"><i></i></div>
+        </div>
+        <div class="values-grid" id="valuesGrid"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PACKAGING ===================== -->
+  <section class="section-pad" style="background:var(--ivory-deep)">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 class="display-lg" data-reveal>Packaging &amp; Design</h2>
+        <p class="sub-serif" data-reveal>Where minimalism meets luxury</p>
+        <div class="rule"><i></i></div>
+      </div>
+
+      <div class="split-feature">
+        <div class="sf-media" id="packMedia" data-reveal></div>
+        <div class="sf-body">
+          <div class="sf-list" id="packList"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== LIFESTYLE BAND ===================== -->
+  <!-- Wide editorial image. No text sits inside the image itself. -->
+  <section class="lifestyle" aria-label="NIELLOR campaign">
+    <div class="lifestyle-media" id="lifestyleMedia" data-reveal></div>
+    <div class="wrap lifestyle-caption" data-reveal>
+      <p class="eyebrow">The NIELLOR Signature</p>
+      <p class="serif-quote">A scent is the silent signature you leave behind.</p>
+      <div class="rule"><i></i></div>
+      <a class="link-line" href="collection.html">Explore the collection &rarr;</a>
+    </div>
+  </section>
+
+  <!-- ===================== WHY NIELLOR ===================== -->
+  <section class="section-pad">
+    <div class="wrap">
+      <div class="framed">
+        <div class="section-head">
+          <h2 class="display-lg" data-reveal>Why Choose Niellor</h2>
+          <p class="sub-serif" data-reveal>Luxury beyond fragrance</p>
+          <div class="rule"><i></i></div>
+        </div>
+        <div class="pillars" id="why"></div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ===================== COMING SOON ===================== -->
+  <section class="section-pad coming-sec" id="coming-soon">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 class="display-lg" data-reveal>Coming Soon</h2>
+        <p class="sub-serif" data-reveal>Fragrances in development</p>
+        <div class="rule"><i></i></div>
+      </div>
+      <div class="coming-grid" id="comingGrid"></div>
+    </div>
+  </section>
+
+  <!-- ===================== WELCOME OFFER ===================== -->
+  <section class="promo-sec" id="welcome-offer">
+    <div class="wrap">
+      <div class="promo" data-reveal id="promo"></div>
+    </div>
+  </section>
+
+  <!-- ===================== CLOSING ===================== -->
+  <section class="thankyou">
+    <div class="wrap">
+      <div class="ty-mark" data-reveal>
+        <span class="brand-word">Niellor</span>
+        <span class="brand-sub">Eau de Parfum</span>
+      </div>
+      <h2 class="ty-head wordmark" data-reveal>Thank You</h2>
+      <div class="rule"><i></i></div>
+      <div class="ty-set" id="tySet"></div>
+      <div class="ty-cta" data-reveal>
+        <a class="btn" href="collection.html">Shop the Collection</a>
+        <a class="btn btn-ghost" href="contact.html">Get in Touch</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== NEWSLETTER ===================== -->
+  <section class="section-pad newsletter">
+    <div class="wrap-narrow">
+      <p class="eyebrow" data-reveal>The NIELLOR Letter</p>
+      <h2 class="display-md" data-reveal>Be first to know</h2>
+      <div class="rule"><i></i></div>
+      <p class="lede" style="margin-inline:auto; text-align:center" data-reveal>
+        New compositions and launches, shared with our list first.
+      </p>
+      <form class="nl-form" data-demo="Thank you — welcome to NIELLOR" data-reveal>
+        <input type="email" placeholder="Your email address" required aria-label="Email address">
+        <button class="btn btn-gold btn-sm" type="submit">Subscribe</button>
+      </form>
+      <p class="nl-note" data-reveal>No noise. Unsubscribe any time.</p>
+    </div>
+  </section>
+
+</main>
+
+<div id="site-footer"></div>
+
+<script src="js/products.js"></script>
+<script src="js/auth-config.js"></script>
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+<script>
+window.pageInit = function () {
+
+  /* Cover — its own media object, loaded eagerly (above the fold) */
+  document.getElementById('coverMedia').innerHTML =
+    media(NIELLOR_MEDIA.hero, { eager: true, sizes: '(max-width: 900px) 90vw, 45vw' });
+
+  /* Marquee — the brand's stated values */
+  const words = ['Timeless Elegance', 'Premium Quality', 'Sustainability', 'Individuality'];
+  document.getElementById('marquee').innerHTML =
+    [...words, ...words].map(w => `<span>${w}</span>`).join('');
+
+  /* ---- Collection: rendered from NIELLOR_PRODUCTS, any length ---- */
+  document.getElementById('collectionGrid').innerHTML = NIELLOR_PRODUCTS.map(p => `
+    <article class="p-card" data-reveal data-ambient="${p.tint}">
+      <a class="p-card-media" href="product.html?id=${p.id}" style="--card-tint:${p.tint}">
+        ${productMedia(p, { sizes: '(max-width: 900px) 90vw, 30vw' })}
+        <span class="p-quick">
+          <button class="btn btn-sm btn-full" data-add="${p.id}">Add to Bag</button>
+        </span>
+      </a>
+      <div class="p-card-body">
+        <h3>${p.shortName}</h3>
+        <p class="p-mood">${p.category}</p>
+        <p class="p-desc">${(p.descriptors || []).join(' &middot; ')}</p>
+        <div class="p-family">
+          <span class="p-price"><small>from</small> ${money(priceFrom(p))}</span>
+          <span class="p-cta">Discover</span>
+        </div>
+      </div>
+      <div class="p-foot">
+        ${ICON[p.icon] || ICON.sparkle}
+        <em>${p.family}</em>
+      </div>
+    </article>`).join('');
+
+  /* Size ladder — read from the shared price list */
+  document.getElementById('sizeCards').innerHTML = NIELLOR_SIZES.map(s => `
+    <div class="size-card${s.ml === NIELLOR_DEFAULT_ML ? ' feature' : ''}" data-reveal>
+      ${s.tag ? `<span class="size-tag">${s.tag}</span>` : ''}
+      <span class="size-ml">${s.ml}<em>ml</em></span>
+      <span class="size-price">${money(s.price)}</span>
+      <span class="size-note">Eau de Parfum${NIELLOR_POLICY.gstInclusive ? ' &middot; incl. GST' : ''}</span>
+    </div>`).join('');
+
+  /* ---- Target audience: each card holds its own image object ---- */
+  const audIcon = { women: 'flower', unisex: 'leaf', men: 'wood' };
+  document.getElementById('audCards').innerHTML = NIELLOR_AUDIENCE.map(a => `
+    <article class="aud-card" data-reveal>
+      <div class="aud-visual">
+        ${media(a.image, { sizes: '(max-width: 900px) 90vw, 22vw' })}
+        <span class="aud-badge">${ICON[audIcon[a.key]] || ICON.sparkle}</span>
+      </div>
+      <div class="aud-card-body">
+        <h4>${a.title}</h4>
+        <p>${a.text}</p>
+      </div>
+    </article>`).join('');
+
+  const facts = [
+    { icon: 'users', t: 'Age Group',        d: '20 – 45 years. Professionals, entrepreneurs, creatives, and fragrance enthusiasts who appreciate timeless luxury and premium craftsmanship.' },
+    { icon: 'globe', t: 'Lifestyle',        d: 'Modern, ambitious, and style-conscious individuals who value quality and elegance in every aspect of their lives.' },
+    { icon: 'bag',   t: 'Buying Behaviour', d: 'They value premium quality, long-lasting fragrances, and memorable brand experiences over trends and price.' },
+    { icon: 'heart', t: 'What They Value',  d: 'Authenticity, craftsmanship, sustainability, individuality, and timeless design.' }
+  ];
+  document.getElementById('audFacts').innerHTML = facts.map(f => `
+    <div class="aud-fact" data-reveal>
+      <div class="aud-fact-icon">${ICON[f.icon]}</div>
+      <div><h4>${f.t}</h4><p>${f.d}</p></div>
+    </div>`).join('');
+
+  /* ---- Brand identity ---- */
+  const pillars = [
+    { icon: 'hourglass', t: 'Timeless',    d: 'Classic designs and fragrances that never go out of style.' },
+    { icon: 'diamond',   t: 'Premium',     d: 'Exceptional ingredients, refined craftsmanship, and uncompromising quality.' },
+    { icon: 'leaf',      t: 'Sustainable', d: 'Thoughtfully created with respect for people and the environment.' },
+    { icon: 'minimal',   t: 'Minimal',     d: 'Clean aesthetics inspired by elegance and simplicity.' },
+    { icon: 'heart',     t: 'Authentic',   d: 'Every fragrance tells a genuine story and reflects individuality.' }
+  ];
+  document.getElementById('pillars').innerHTML = pillars.map(p => `
+    <div class="pillar oval" data-reveal>
+      <div class="pillar-icon">${ICON[p.icon]}</div>
+      <h4>${p.t}</h4>
+      <p>${p.d}</p>
+    </div>`).join('');
+
+  /* ---- Values ---- */
+  const values = [
+    { icon: 'sparkle', t: 'Timeless Elegance', d: 'Creating fragrances that remain sophisticated and relevant for every generation.' },
+    { icon: 'diamond', t: 'Premium Quality',   d: 'Crafted with carefully selected ingredients to ensure exceptional performance and lasting impressions.' },
+    { icon: 'leaf',    t: 'Sustainability',    d: 'Committed to responsible sourcing, eco-conscious packaging, and a greener future.' },
+    { icon: 'bottle',  t: 'Individuality',     d: 'Every fragrance is designed to celebrate personality, confidence, and self-expression.' }
+  ];
+  document.getElementById('valuesGrid').innerHTML = values.map(v => `
+    <div class="value" data-reveal>
+      <div class="value-icon">${ICON[v.icon]}</div>
+      <h3>${v.t}</h3>
+      <p>${v.d}</p>
+    </div>`).join('');
+
+  /* ---- Packaging: its own media object ---- */
+  document.getElementById('packMedia').innerHTML =
+    media(NIELLOR_MEDIA.packaging, { sizes: '(max-width: 900px) 90vw, 45vw' });
+
+  /* ---- Lifestyle band: its own media object ---- */
+  document.getElementById('lifestyleMedia').innerHTML =
+    media(NIELLOR_MEDIA.lifestyle, { sizes: '100vw' });
+
+  const packs = [
+    { icon: 'diamond', t: 'Elegant Design',           d: 'Every NIELLOR fragrance is presented in thoughtfully designed packaging that reflects timeless sophistication and premium craftsmanship.' },
+    { icon: 'shield',  t: 'Premium Materials',        d: 'From the glass bottle to the gift box, every detail is carefully selected to enhance durability, elegance, and the unboxing experience.' },
+    { icon: 'leaf',    t: 'Sustainable Choice',       d: 'Our packaging embraces recyclable materials and responsible design, combining luxury with environmental consciousness.' },
+    { icon: 'gift',    t: 'A Gift Worth Remembering', d: 'Designed to make every purchase feel special — whether it is a personal signature scent or a meaningful gift.' }
+  ];
+  document.getElementById('packList').innerHTML = packs.map(p => `
+    <div class="sf-item" data-reveal>
+      <div class="sf-item-icon">${ICON[p.icon]}</div>
+      <div><h4>${p.t}</h4><p>${p.d}</p></div>
+    </div>`).join('');
+
+  /* ---- Why NIELLOR ---- */
+  const why = [
+    { icon: 'diamond', t: 'Premium Craftsmanship', d: 'Made with carefully selected ingredients and meticulous attention to detail.' },
+    { icon: 'flower',  t: 'Signature Scents',      d: 'Distinctive fragrances designed to reflect personality and confidence.' },
+    { icon: 'leaf',    t: 'Sustainable Luxury',    d: 'Eco-conscious packaging and responsible sourcing without compromising elegance.' },
+    { icon: 'minimal', t: 'Timeless Design',       d: 'Minimalist aesthetics that remain sophisticated across generations.' },
+    { icon: 'gift',    t: 'Memorable Experience',  d: 'From the first impression to the final note, designed to create a lasting connection.' }
+  ];
+  document.getElementById('why').innerHTML = why.map(p => `
+    <div class="pillar" data-reveal>
+      <div class="pillar-icon">${ICON[p.icon]}</div>
+      <h4>${p.t}</h4>
+      <p>${p.d}</p>
+    </div>`).join('');
+
+  /* ---- Closing: each bottle uses its own image object ---- */
+  document.getElementById('tySet').innerHTML = NIELLOR_PRODUCTS.map(p => `
+    <a class="ty-bottle" href="product.html?id=${p.id}" data-reveal>
+      <span class="ty-frame">${productMedia(p, { sizes: '30vw' })}</span>
+      <span class="ty-name">${p.shortName}</span>
+    </a>`).join('');
+
+  /* ---- Campaign: each frame owns its image, falling back to that
+         fragrance's own product photograph — never another product's ---- */
+  document.getElementById('campaignGrid').innerHTML = NIELLOR_CAMPAIGN.map(c => `
+    <a class="camp-card" href="product.html?id=${c.productId}" data-reveal>
+      <span class="camp-media">
+        ${media(campaignImage(c), { sizes: '(max-width: 900px) 86vw, 30vw' })}
+      </span>
+      <span class="camp-body">
+        <em class="camp-aud">${c.audience}</em>
+        <strong class="camp-title">${c.title}</strong>
+        <span class="camp-line">${c.line}</span>
+      </span>
+    </a>`).join('');
+
+  /* ---- Coming soon: clearly not purchasable ---- */
+  document.getElementById('comingGrid').innerHTML = NIELLOR_COMING_SOON.map(c => `
+    <article class="coming-card" data-reveal>
+      <div class="coming-media" style="--tint:${c.tint}">
+        ${c.image && c.image.src
+          ? media(c.image, { sizes: '(max-width: 900px) 70vw, 22vw' })
+          : '<span class="coming-mark" aria-hidden="true"></span>'}
+        <span class="coming-flag">${c.label}</span>
+      </div>
+      <div class="coming-body">
+        <h3>${c.label}</h3>
+        <p>${c.teaser}</p>
+        <button class="btn btn-sm btn-ghost" data-waitlist="${c.key}">Join the Waitlist</button>
+      </div>
+    </article>`).join('');
+
+  /* ---- Welcome offer ---- */
+  const promoEl = document.getElementById('promo');
+  if (NIELLOR_PROMO.active) {
+    promoEl.innerHTML = `
+      <p class="promo-kicker">${NIELLOR_PROMO.headline}</p>
+      <p class="promo-offer">${NIELLOR_PROMO.offer}</p>
+      <button class="promo-code" id="promoCode" type="button">
+        <span>${NIELLOR_PROMO.code}</span><em>Tap to copy</em>
+      </button>
+      <a class="btn" href="collection.html">Shop Collection</a>
+      <p class="promo-fine">${NIELLOR_PROMO.checkoutConnected
+        ? 'Applied at checkout.'
+        : 'Applies to your first order once online checkout opens.'}</p>`;
+
+    document.getElementById('promoCode').addEventListener('click', async e => {
+      const btn = e.currentTarget;
+      try { await navigator.clipboard.writeText(NIELLOR_PROMO.code); }
+      catch { /* clipboard blocked — the code is on screen anyway */ }
+      btn.classList.add('copied');
+      btn.querySelector('em').textContent = 'Copied';
+      setTimeout(() => {
+        btn.classList.remove('copied');
+        btn.querySelector('em').textContent = 'Tap to copy';
+      }, 2000);
+    });
+  } else {
+    promoEl.closest('.promo-sec').remove();
+  }
+
+  /* Waitlist routes to the contact form rather than faking a signup */
+  document.addEventListener('click', e => {
+    if (e.target.closest('[data-waitlist]')) location.href = 'contact.html?interest=waitlist';
+  });
+
+  initReveal();
+  initAmbient();
+};
+</script>
+</body>
+</html>

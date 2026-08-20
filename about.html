@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>About — NIELLOR</title>
+<meta name="description" content="About NIELLOR — packaging and design, our direction, and manufacturing partnership.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header id="site-header"></header>
+
+<main>
+
+  <section class="page-head">
+    <div class="wrap">
+      <h1 class="display-lg" data-reveal>About Niellor</h1>
+      <p class="sub-serif" data-reveal>We create more than perfumes — we create emotions that connect</p>
+      <div class="rule"><i></i></div>
+    </div>
+  </section>
+
+  <!-- Packaging -->
+  <section class="section-pad" style="padding-top:clamp(1.5rem,3vw,2.5rem)">
+    <div class="wrap split-feature">
+      <div class="sf-media" id="packMedia" data-reveal></div>
+      <div class="sf-body">
+        <h2 class="display-md" data-reveal>Packaging &amp; Design</h2>
+        <div class="rule left"><i></i></div>
+        <p class="lede" data-reveal>Where minimalism meets luxury.</p>
+        <div class="sf-list" id="packList"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Direction -->
+  <section class="section-pad" style="background:var(--ivory-deep)">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 class="display-lg" data-reveal>Looking Ahead</h2>
+        <p class="sub-serif" data-reveal>Crafting the future of luxury fragrance</p>
+        <div class="rule"><i></i></div>
+        <p class="lede" data-reveal>
+          Our journey has just begun. With passion, innovation and uncompromising
+          quality, NIELLOR is designed to inspire today and for generations to come.
+        </p>
+      </div>
+      <div class="pillars" id="future"></div>
+    </div>
+  </section>
+
+  <!-- Partnership -->
+  <section class="section-pad" id="partnership">
+    <div class="wrap">
+      <div class="section-head">
+        <h2 class="display-lg" data-reveal>Manufacturing Partnership</h2>
+        <p class="sub-serif" data-reveal>Together, we create excellence</p>
+        <div class="rule"><i></i></div>
+        <p class="lede" data-reveal>
+          We are looking for a manufacturing partner who shares our commitment to
+          quality, craftsmanship and innovation. Let&rsquo;s build something timeless, together.
+        </p>
+      </div>
+
+      <div class="pillars" id="partner1" style="margin-bottom:2.5rem"></div>
+
+      <div class="framed" data-reveal>
+        <p class="eyebrow" style="text-align:center">Our Commitment</p>
+        <div class="pillars" id="partner2" style="margin-top:1.75rem"></div>
+      </div>
+
+      <div class="pull-quote" data-reveal>
+        <p class="serif-quote">
+          <span class="qm">&ldquo;</span>
+          Great fragrances are born from the perfect blend of vision and craftsmanship.
+          <span class="qm">&rdquo;</span>
+        </p>
+        <div style="margin-top:2rem">
+          <a class="btn" href="contact.html">Start a Conversation</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<div id="site-footer"></div>
+
+<script src="js/products.js"></script>
+<script src="js/auth-config.js"></script>
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+<script>
+window.pageInit = function () {
+
+  const pillarHTML = (list, target) => {
+    document.getElementById(target).innerHTML = list.map(p => `
+      <div class="pillar" data-reveal>
+        <div class="pillar-icon">${ICON[p.icon]}</div>
+        <h4>${p.t}</h4>
+        <p>${p.d}</p>
+      </div>`).join('');
+  };
+
+  /* Packaging image — its own media object, placeholder until supplied */
+  document.getElementById('packMedia').innerHTML = media(NIELLOR_MEDIA.packaging);
+
+  const packs = [
+    { icon: 'diamond', t: 'Elegant Design',           d: 'Every NIELLOR fragrance is presented in thoughtfully designed packaging that reflects timeless sophistication and premium craftsmanship.' },
+    { icon: 'shield',  t: 'Premium Materials',        d: 'From the glass bottle to the gift box, every detail is carefully selected to enhance durability, elegance, and the unboxing experience.' },
+    { icon: 'leaf',    t: 'Sustainable Choice',       d: 'Our packaging embraces recyclable materials and responsible design, combining luxury with environmental consciousness.' },
+    { icon: 'gift',    t: 'A Gift Worth Remembering', d: 'Designed to make every purchase feel special — whether it is a personal signature scent or a meaningful gift.' }
+  ];
+  document.getElementById('packList').innerHTML = packs.map(p => `
+    <div class="sf-item" data-reveal>
+      <div class="sf-item-icon">${ICON[p.icon]}</div>
+      <div><h4>${p.t}</h4><p>${p.d}</p></div>
+    </div>`).join('');
+
+  pillarHTML([
+    { icon: 'globe',   t: 'Global Presence',        d: 'Expanding into premium markets across Europe, the Middle East, Asia, and North America.' },
+    { icon: 'bottle',  t: 'New Collections',        d: 'Introducing seasonal editions, exclusive collaborations, and signature luxury fragrances.' },
+    { icon: 'leaf',    t: 'Sustainable Innovation', d: 'Continuing our commitment to responsible sourcing, elegant packaging, and environmentally conscious practices.' },
+    { icon: 'diamond', t: 'Long Term Growth',       d: 'Building NIELLOR into a globally recognised luxury fragrance house through innovation, quality, and timeless design.' }
+  ], 'future');
+
+  pillarHTML([
+    { icon: 'bottle',  t: 'Custom Development',  d: 'Expertise in creating unique, high quality scents that reflect our brand identity.' },
+    { icon: 'gift',    t: 'Premium Packaging',   d: 'Ability to craft elegant, luxurious packaging that elevates the brand experience.' },
+    { icon: 'minimal', t: 'Flexible MOQs',       d: 'Low minimum order quantities to support our initial launch and future growth.' },
+    { icon: 'globe',   t: 'Scalable Production', d: 'Capacity and technology to scale with our brand as we expand.' },
+    { icon: 'shield',  t: 'Quality Assurance',   d: 'Strict quality control and compliance with international standards.' }
+  ], 'partner1');
+
+  pillarHTML([
+    { icon: 'diamond',   t: 'Premium Ingredients',   d: 'We will not compromise on what goes into the bottle.' },
+    { icon: 'leaf',      t: 'Ethical Practices',     d: 'Sustainable and responsible at every stage of production.' },
+    { icon: 'hourglass', t: 'Timeless Quality',      d: 'Design and formulation built to remain relevant for years.' },
+    { icon: 'globe',     t: 'Global Growth',         d: 'A relationship built on trust, transparency and shared success.' },
+    { icon: 'heart',     t: 'Long Term Partnership', d: 'We are looking for a collaborator, not a supplier.' }
+  ], 'partner2');
+
+  initReveal();
+};
+</script>
+</body>
+</html>
