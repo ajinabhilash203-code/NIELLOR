@@ -250,10 +250,14 @@ function initContactForm() {
             + 'received your message and our team will get back to you shortly.'
             + (body.ticket ? '  Ticket: ' + body.ticket : ''), 'ok');
       } catch (err) {
-        set((err && err.message && err.message !== 'Failed to fetch'
-              ? err.message + ' '
-              : 'We couldn’t send your message. Please try again or ')
-            + 'contact us by email at ' + NIELLOR_CONTACT.email + '.', 'error');
+        /* Show the server's own wording when it gave us one (too long, rate
+           limited, invalid address); otherwise a neutral message. Either way
+           the fallback email address follows as a complete sentence. */
+        const detail = err && err.message && err.message !== 'Failed to fetch'
+          ? err.message
+          : 'We couldn’t send your message.';
+        set(detail + ' Please try again, or contact us by email at '
+            + NIELLOR_CONTACT.email + '.', 'error');
       } finally {
         button.disabled = false;
       }
