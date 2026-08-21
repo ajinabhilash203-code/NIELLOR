@@ -50,18 +50,22 @@ const NIELLOR_POLICY = {
    `email` is the official address, used for the mailto links and as the
    destination for the contact form.
 
-   `formEndpoint` is where the contact form POSTs. It is empty until you
-   create one — see the "Contact form" section of README.md. While it is
-   empty the form opens a pre-filled draft in the visitor's mail app instead,
-   so a message is always genuinely delivered and the form never claims to
-   have sent something it did not.
+   `formEndpoint` is where the contact form POSTs. It points at the
+   `contact-submit` Supabase Edge Function, which saves the message, issues a
+   ticket number (NL-1001, NL-1002 …) and emails NIELLOR. Success is only
+   reported once the server confirms the message was stored.
 
-   Only put a PUBLIC form endpoint here (Formspree, Web3Forms, Netlify).
-   Never put a private API key or secret in this file — it ships to the browser.
+   This URL is PUBLIC by design — it is just an address, and it carries no
+   secret. The Resend API key lives only inside that function, on Supabase's
+   servers, as the RESEND_API_KEY secret. Never put a private API key or
+   secret in this file — it ships to every visitor's browser.
+
+   If this is ever emptied, the form falls back to opening a pre-filled draft
+   in the visitor's own mail app, so a message is still genuinely delivered.
    -------------------------------------------------------------------------- */
 const NIELLOR_CONTACT = {
   email: 'niellor.co@gmail.com',
-  formEndpoint: ''
+  formEndpoint: 'https://xqityglaejzudujobzng.supabase.co/functions/v1/contact-submit'
 };
 
 /* ==========================================================================

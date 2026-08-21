@@ -218,23 +218,42 @@ function initContactForm() {
 
     const endpoint = (NIELLOR_CONTACT.formEndpoint || '').trim();
 
-    /* ---- Path 1: a configured form service ---- */
+    /* ---- Path 1: the NIELLOR support endpoint ----
+       Saves the message and returns its ticket number. Success is only
+       shown when the server confirms the message was stored, so the page
+       can never claim to have sent something that was lost. */
     if (endpoint) {
       button.disabled = true;
       set('Sending…');
       try {
         const res = await fetch(endpoint, {
           method: 'POST',
-          headers: { Accept: 'application/json' },
-          body: new FormData(form)
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name:     data.name,
+            email:    data.email,
+            reason:   data.subject || '',
+            message:  data.message,
+            _gotcha:  data._gotcha || ''
+          })
         });
-        if (!res.ok) throw new Error('Status ' + res.status);
+
+        let body = {};
+        try { body = await res.json(); } catch (_) { /* non-JSON error page */ }
+
+        if (!res.ok || !body.ok) {
+          throw new Error(body.error || 'Status ' + res.status);
+        }
+
         form.reset();
-        set('Thank you — your message has been sent to NIELLOR. We will reply to '
-            + data.email + '.', 'ok');
+        set('Message sent successfully. Thank you for contacting NIELLOR — we have '
+            + 'received your message and our team will get back to you shortly.'
+            + (body.ticket ? '  Ticket: ' + body.ticket : ''), 'ok');
       } catch (err) {
-        set('Sorry, the message could not be sent. Please email us directly at '
-            + NIELLOR_CONTACT.email + '.', 'error');
+        set((err && err.message && err.message !== 'Failed to fetch'
+              ? err.message + ' '
+              : 'We couldn’t send your message. Please try again or ')
+            + 'contact us by email at ' + NIELLOR_CONTACT.email + '.', 'error');
       } finally {
         button.disabled = false;
       }
