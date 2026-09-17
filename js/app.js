@@ -197,7 +197,7 @@ function mountChrome() {
           <span>Subtotal <em>incl. GST</em></span>
           <b id="cartTotal">${money(0)}</b>
         </div>
-        <button class="btn btn-full">Proceed to Checkout</button>
+        <a class="btn btn-full" href="checkout.html" id="drawerCheckout">Proceed to Checkout</a>
         ${payRail()}
       </div>
     </aside>

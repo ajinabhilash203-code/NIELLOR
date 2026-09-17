@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Checkout — NIELLOR</title>
+<meta name="description" content="Complete your NIELLOR order.">
+<meta name="robots" content="noindex">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@200;300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body data-page="checkout">
+
+<header id="site-header"></header>
+
+<main>
+  <section class="page-head">
+    <div class="wrap">
+      <h1 class="display-lg" data-reveal>Checkout</h1>
+      <div class="rule"><i></i></div>
+    </div>
+  </section>
+
+  <section class="section-pad" style="padding-top:clamp(1rem,2vw,2rem)">
+    <div class="wrap" id="checkoutRoot"></div>
+  </section>
+</main>
+
+<div id="site-footer"></div>
+
+<script src="js/products.js"></script>
+<script src="js/auth-config.js"></script>
+<script src="js/app.js"></script>
+<script src="js/auth.js"></script>
+<script>
+/* ==========================================================================
+   NIELLOR — Checkout
+
+   Deliberately dumb about money. The page shows a preview total so the
+   customer knows roughly what they are about to pay, but the amount actually
+   charged is whatever `create-order` computes on the server from the
+   products table. If the two ever disagree, the server wins and the page
+   re-renders with the server's figures.
+   ========================================================================== */
+
+const ORDER_ENDPOINT =
+  'https://xqityglaejzudujobzng.supabase.co/functions/v1/create-order';
+
+let addresses    = [];
+let chosenAddress = null;
+let placing      = false;
+
+const root = () => document.getElementById('checkoutRoot');
+
+const esc = s => String(s ?? '')
+  .replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;')
+  .replaceAll('"','&quot;').replaceAll("'",'&#39;');
+
+/* -------------------------------------------------------------------------
+   States that are not the main form
+   ------------------------------------------------------------------------- */
+function viewEmpty() {
+  return `
+    <div class="acct-panel" style="text-align:center;padding-block:clamp(2rem,6vw,4rem)">
+      <h2 class="display-md">Your bag is empty</h2>
+      <p style="color:var(--ink-soft);margin:.9rem 0 1.8rem">
+        Nothing to check out just yet.</p>
+      <a class="btn" href="collection.html">Explore the Collection</a>
+    </div>`;
+}
+
+function viewSignInNeeded() {
+  return `
+    <div class="acct-panel" style="text-align:center;padding-block:clamp(2rem,6vw,4rem)">
+      <h2 class="display-md">Sign in to continue</h2>
+      <p style="color:var(--ink-soft);margin:.9rem 0 1.8rem;max-width:34rem;margin-inline:auto">
+        Your order is kept in your NIELLOR account so you can follow it and
+        find it again later.</p>
+      <button class="btn" id="goSignIn">Sign In or Create Account</button>
+    </div>`;
+}
+
+function viewNoAddress() {
+  return `
+    <div class="acct-panel" style="text-align:center;padding-block:clamp(2rem,6vw,4rem)">
+      <h2 class="display-md">Add a delivery address</h2>
+      <p style="color:var(--ink-soft);margin:.9rem 0 1.8rem;max-width:34rem;margin-inline:auto">
+        We need somewhere to send your fragrance. Add an address to your
+        account, then return here.</p>
+      <a class="btn" href="account.html#addresses">Add an Address</a>
+    </div>`;
+}
+
+/* -------------------------------------------------------------------------
+   The order summary
+   ------------------------------------------------------------------------- */
+function summaryRows(items) {
+  return items.map(l => {
+    const p = getProduct(l.id);
+    if (!p) return '';
+    const line = Cart.priceOf(l) * l.qty;
+    return `
+      <div class="co-line">
+        <div class="co-thumb">${media(p.image)}</div>
+        <div class="co-line-body">
+          <p class="co-name">${esc(p.shortName)}</p>
+          <p class="co-meta">${l.ml} ml &middot; Quantity ${l.qty}</p>
+        </div>
+        <p class="co-amount">${money(line)}</p>
+      </div>`;
+  }).join('');
+}
+
+function addressCards() {
+  return addresses.map(a => `
+    <label class="addr-card co-addr${a.id === chosenAddress ? ' is-default' : ''}">
+      <input type="radio" name="addr" value="${esc(a.id)}"
+             ${a.id === chosenAddress ? 'checked' : ''} class="co-radio">
+      <span class="addr-name">${esc(a.full_name || a.label || 'Delivery address')}</span>
+      <span class="addr-lines">
+        ${esc(a.line1)}${a.line2 ? '<br>' + esc(a.line2) : ''}<br>
+        ${esc(a.city)}${a.state ? ', ' + esc(a.state) : ''} ${esc(a.postal_code || '')}<br>
+        ${esc(a.country || 'India')}
+      </span>
+      ${a.phone ? `<span class="addr-phone">${esc(a.phone)}</span>` : ''}
+    </label>`).join('');
+}
+
+function render() {
+  const items = Cart.read();
+  if (!items.length) { root().innerHTML = viewEmpty(); return; }
+
+  const subtotal = Cart.subtotal();
+
+  root().innerHTML = `
+    <div class="co-grid">
+      <div>
+        <div class="acct-panel">
+          <div class="acct-panel-head"><h2>Delivery address</h2>
+            <a class="acct-link" href="account.html#addresses">Manage</a></div>
+          <div class="addr-grid" id="addrList">${addressCards()}</div>
+        </div>
+
+        <div class="acct-panel" style="margin-top:1.25rem">
+          <div class="acct-panel-head"><h2>Discount code</h2></div>
+          <div class="field" style="margin-bottom:0">
+            <input id="coupon" type="text" placeholder="Enter a code"
+                   autocomplete="off" spellcheck="false">
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="acct-panel co-summary">
+          <div class="acct-panel-head"><h2>Your order</h2>
+            <a class="acct-link" href="collection.html">Add more</a></div>
+
+          ${summaryRows(items)}
+
+          <div class="co-totals">
+            <div><span>Subtotal</span><b>${money(subtotal)}</b></div>
+            <div><span>Delivery</span><b>Free</b></div>
+            <div class="co-grand"><span>Total</span><b>${money(subtotal)}</b></div>
+          </div>
+
+          ${NIELLOR_POLICY && NIELLOR_POLICY.gstInclusive
+            ? `<p class="co-fine">Prices include GST.</p>` : ''}
+
+          <button class="btn btn-full" id="placeOrder" style="margin-top:1.1rem">
+            Place Order
+          </button>
+          <p class="form-status" id="coStatus" role="status" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>`;
+
+  document.getElementById('addrList').addEventListener('change', e => {
+    const r = e.target.closest('.co-radio');
+    if (r) chosenAddress = r.value;
+  });
+
+  document.getElementById('placeOrder').addEventListener('click', placeOrder);
+}
+
+/* -------------------------------------------------------------------------
+   Placing the order
+   ------------------------------------------------------------------------- */
+const say = (msg, state) => {
+  const el = document.getElementById('coStatus');
+  if (!el) return;
+  el.textContent = msg;
+  el.className = 'form-status' + (state ? ' is-' + state : '');
+};
+
+async function placeOrder() {
+  if (placing) return;
+
+  const items = Cart.read();
+  if (!items.length) return render();
+  if (!chosenAddress) return say('Please choose a delivery address.', 'error');
+
+  const btn = document.getElementById('placeOrder');
+  placing = true; btn.disabled = true;
+  say('Preparing your order…');
+
+  try {
+    const { sb } = await requireSession();
+    const { data } = await sb.auth.getSession();
+    const token = data?.session?.access_token;
+    if (!token) throw new Error('Please sign in again.');
+
+    const res = await fetch(ORDER_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + token },
+      body: JSON.stringify({
+        items: items.map(l => ({ slug: l.id, size_ml: l.ml, qty: l.qty })),
+        address_id: chosenAddress,
+        coupon_code: (document.getElementById('coupon')?.value || '').trim()
+      })
+    });
+
+    let body = {};
+    try { body = await res.json(); } catch (_) {}
+    if (!res.ok || !body.ok) throw new Error(body.error || 'Status ' + res.status);
+
+    /* The server has spoken. Show ITS total, not ours. */
+    if (body.gateway && body.gateway.provider === 'razorpay') {
+      await payWithRazorpay(body);
+    } else {
+      say(`Order ${body.order_number} created for ${money(body.total)}. `
+        + 'Online payment is not switched on yet, so nothing has been charged.', 'ok');
+    }
+  } catch (err) {
+    say((err?.message || 'We could not place your order.')
+      + ' Please try again, or contact us at ' + NIELLOR_CONTACT.email + '.', 'error');
+  } finally {
+    placing = false;
+    const b = document.getElementById('placeOrder');
+    if (b) b.disabled = false;
+  }
+}
+
+/* Razorpay's own sheet handles UPI, cards, netbanking and wallets. */
+function loadRazorpay() {
+  return new Promise((resolve, reject) => {
+    if (window.Razorpay) return resolve();
+    const s = document.createElement('script');
+    s.src = 'https://checkout.razorpay.com/v1/checkout.js';
+    s.onload = () => resolve();
+    s.onerror = () => reject(new Error('Could not load the payment window.'));
+    document.head.appendChild(s);
+  });
+}
+
+async function payWithRazorpay(order) {
+  await loadRazorpay();
+  say('Opening secure payment…');
+
+  const rzp = new window.Razorpay({
+    key: order.gateway.key_id,          // public key, safe in the browser
+    order_id: order.gateway.order_id,
+    amount: order.gateway.amount,
+    currency: order.currency || 'INR',
+    name: 'NIELLOR',
+    description: 'Order ' + order.order_number,
+    handler: () => {
+      /* Deliberately does NOT mark the order paid. Only the server may do
+         that, after verifying Razorpay's signature. */
+      Cart.write([]);
+      location.href = 'account.html#orders';
+    },
+    modal: {
+      ondismiss: () => say('Payment cancelled. Your order is saved and unpaid.', 'error')
+    },
+    theme: { color: '#B0803F' }
+  });
+
+  rzp.on('payment.failed', r => {
+    say('Payment failed: ' + (r?.error?.description || 'please try another method.'), 'error');
+  });
+
+  rzp.open();
+}
+
+/* ------------------------------------------------------------------------- */
+window.pageInit = async function () {
+  const items = Cart.read();
+  if (!items.length) { root().innerHTML = viewEmpty(); return; }
+
+  let session = null;
+  try {
+    const s = await requireSession();
+    session = s.user;
+  } catch (_) { session = null; }
+
+  if (!session) {
+    root().innerHTML = viewSignInNeeded();
+    document.getElementById('goSignIn')
+      ?.addEventListener('click', () => openAuth('signin'));
+    return;
+  }
+
+  try { addresses = await listAddresses(); } catch (_) { addresses = []; }
+  if (!addresses.length) { root().innerHTML = viewNoAddress(); return; }
+
+  chosenAddress = (addresses.find(a => a.is_default) || addresses[0]).id;
+  render();
+};
+</script>
+</body>
+</html>
